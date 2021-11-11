@@ -20,9 +20,41 @@ mongoose.connect('mongodb://localhost/celke', {
 
 
 app.get("/", (req, res) => {
-    return res.json({ Titulo: "Introdução a API"})
+    Artigo.find({}).then( (artigo) => {
+        return res.json(artigo);
+
+    }).catch((erro) => {
+        return res.status(400).json({
+            error: true,
+            message: "Nenhum Artigo encontrado."
+        })
+    })
 })
 
+app.get( "/artigo/:id", ( req, res ) => {
+    Artigo.findOne({id: req.params.id}).then( (artigo) => {
+        return res.json(artigo);
+
+    }).catch((erro) => {
+        return res.status(400).json({
+            error: true,
+            message: "Nenhum Artigo encontrado."
+        })
+    })
+})
+
+app.put("/artigo/:id", (req, res) =>{
+    const artigo = Artigo.updateOne({_id: req.params.id }, req.body, (erro) => {
+       if(erro) return res.status(400).json({
+           erro: true,
+           message: "Error: Artigo não foi editado"
+       }) 
+       return res.status(200).json({
+        erro: false,
+        message: "Editado com sucesso!"
+    }) 
+    })
+})
 
 app.post( "/artigo", ( req, res ) => {
     const artigo = Artigo.create(req.body, (err) => {
@@ -38,7 +70,18 @@ app.post( "/artigo", ( req, res ) => {
     })
 })
 
-
+app.delete("/artigo/:id", (req, res) =>{
+    const artigo = Artigo.deleteOne({_id: req.params.id }, req.body, (erro) => {
+       if(erro) return res.status(400).json({
+           erro: true,
+           message: "Error: Artigo não foi deletado"
+       }) 
+       return res.status(200).json({
+        erro: false,
+        message: "Deletado com sucesso!"
+    }) 
+    })
+})
 
 
 
